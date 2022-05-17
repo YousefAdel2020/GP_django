@@ -1,3 +1,6 @@
+from ast import Not
+from asyncio.windows_events import NULL
+from lib2to3.pgen2.token import EQUAL
 from django.shortcuts import render
 
 from rest_framework.decorators import api_view,permission_classes
@@ -16,10 +19,11 @@ from django.contrib.auth.models import User
 @permission_classes([IsAuthenticated])
 def send_friend_request(request, pk):
     sender = request.user
-    recipient = User.objects.get(id=pk)
+    recipient = User.objects.get(id=pk)  
     model = FriendRequest.objects.get_or_create(sender=request.user, receiver=recipient)
     msg={"message":"you send a friend request successfully"}
     return Response(msg)
+
 
 
 
@@ -82,7 +86,9 @@ def remove_friend(request, pk):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_myfriends(request):
-    f=Friend_list.objects.get(current_user=request.user).users1.all()
+    Friend_list.objects.get_or_create(current_user=request.user)
+    f= Friend_list.objects.get(current_user=request.user).users1.all()
+    print(f)
     serializer=UserSerializer(f,many=True)
     return Response(serializer.data)
 
